@@ -73,7 +73,7 @@ public class servicetransaction implements Iservicetransaction {
         }
     }
 
-    // DELETE (MANUAL فقط)
+    // DELETE (MANUAL)
     @Override
     public void supprimer(int id) {
         String sql = "DELETE FROM transaction WHERE id_transaction=? AND source='MANUAL'";
