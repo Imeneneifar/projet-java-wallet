@@ -1,0 +1,115 @@
+package com.example.gestionwallet.services;
+
+import com.example.gestionwallet.interfaces.services.Iservicecategorie;
+import com.example.gestionwallet.models.categorie;
+import com.example.gestionwallet.utils.database;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class servicecategorie implements Iservicecategorie {
+
+    Connection cnx;
+
+    public servicecategorie() {
+        cnx = database.getInstance().getConnection();
+    }
+
+    @Override
+    public void ajouter(categorie c) {
+
+        if (existsByName(c.getNom())) {
+            System.out.println(" Catégorie déjà existante — ajout annulé");
+            return;
+        }
+
+        String sql = "INSERT INTO category (nom, priorite) VALUES (?, ?)";
+
+        try {
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setString(1, c.getNom());
+            ps.setString(2, c.getPriorite());
+            ps.executeUpdate();
+
+            System.out.println(" Catégorie ajoutée");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void modifier(categorie c) {
+        String sql = "UPDATE category SET nom=?, priorite=? WHERE id_category=?";
+
+        try {
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setString(1, c.getNom());
+            ps.setString(2, c.getPriorite());
+            ps.setInt(3, c.getId_category());
+            ps.executeUpdate();
+            System.out.println(" Catégorie modifiée");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void supprimer(int id) {
+        String sql = "DELETE FROM category WHERE id_category=?";
+
+        try {
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setInt(1, id);
+            ps.executeUpdate();
+            System.out.println(" Catégorie supprimée");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<categorie> afficher() {
+        List<categorie> list = new ArrayList<>();
+        String sql = "SELECT * FROM category";
+
+        try {
+            Statement st = cnx.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+
+            while (rs.next()) {
+                categorie c = new categorie(
+                        rs.getInt("id_category"),
+                        rs.getString("nom"),
+                        rs.getString("priorite")
+                );
+                list.add(c);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public boolean existsByName(String nom) {
+        String sql = "SELECT COUNT(*) FROM category WHERE LOWER(nom) = LOWER(?)";
+
+        try {
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setString(1, nom);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+}
