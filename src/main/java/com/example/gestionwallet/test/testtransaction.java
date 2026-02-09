@@ -17,10 +17,20 @@ public class testtransaction {
                 50,
                 Date.valueOf("2024-04-25"),
                 "MANUAL",
-                1,  // user_id
-                1   // category_id
+                1,
+                1
         );
         st.ajouter(t1);
+
+        transaction t3 = new transaction(
+                "INCOME",
+                150,
+                Date.valueOf("2025-04-25"),
+                "MANUAL",
+                1,
+                10
+        );
+        st.ajouter(t3);
 
         // READ
         st.afficher().forEach(System.out::println);
