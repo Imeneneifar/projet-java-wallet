@@ -32,7 +32,7 @@ public class TestCategorie {
         service.ajouter(c);
         service.supprimer(c.getId_category());
 
-        // test passe si aucune exception
+
         assertTrue(true);
     }
 }

@@ -55,7 +55,7 @@ public class TestTransaction {
         service.ajouter(t);
         service.supprimer(t.getId_transaction());
 
-        // test réussi s'il n'y a pas d'exception
+
         assertTrue(true);
     }
 }
