@@ -1,7 +1,6 @@
-package com.example.gestionwallet.test;
+package com.example.gestionwallet;
 
 import com.example.gestionwallet.models.categorie;
-import com.example.gestionwallet.services.servicecategorie;
 
 public class testcategorie {
 

@@ -1,7 +1,7 @@
-package com.example.gestionwallet.test;
+package com.example.gestionwallet.services;
 
 import com.example.gestionwallet.models.transaction;
-import com.example.gestionwallet.services.servicetransaction;
+import com.example.gestionwallet.servicetransaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
