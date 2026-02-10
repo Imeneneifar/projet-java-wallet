@@ -1,4 +1,4 @@
-package com.example.gestionwallet;
+package com.example.gestionwallet.services;
 
 import com.example.gestionwallet.interfaces.services.Iservicetransaction;
 import com.example.gestionwallet.models.transaction;
