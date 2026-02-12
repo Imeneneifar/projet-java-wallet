@@ -132,7 +132,7 @@ public class WalletController {
 
         item.getChildren().addAll(nameLabel, spacer, amountLabel, editBtn, deleteBtn);
 
-        // SUPPRIMER
+        // ================= SUPPRIMER =================
         deleteBtn.setOnAction(e -> {
 
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
@@ -145,7 +145,7 @@ public class WalletController {
             });
         });
 
-        // MODIFIER
+        // ================= MODIFIER (NO TYPE) =================
         editBtn.setOnAction(e -> {
 
             Dialog<ButtonType> dialog = new Dialog<>();
@@ -154,14 +154,9 @@ public class WalletController {
             TextField nameField = new TextField(t.getNom_transaction());
             TextField amountField = new TextField(String.valueOf(t.getMontant()));
 
-            ComboBox<String> typeBox = new ComboBox<>();
-            typeBox.getItems().addAll("INCOME", "OUTCOME");
-            typeBox.setValue(t.getType());
-
             VBox content = new VBox(10,
                     new Label("Nom:"), nameField,
-                    new Label("Montant:"), amountField,
-                    new Label("Type:"), typeBox
+                    new Label("Montant:"), amountField
             );
             content.setPadding(new Insets(10));
 
@@ -176,9 +171,8 @@ public class WalletController {
 
                         t.setNom_transaction(nameField.getText());
                         t.setMontant(Double.parseDouble(amountField.getText()));
-                        t.setType(typeBox.getValue());
 
-                        st.modifier(t);
+                        st.modifier(t);  // update DB
                         loadTransactions();
 
                     } catch (Exception ex) {
