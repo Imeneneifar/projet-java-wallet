@@ -8,9 +8,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 import com.example.gestionwallet.models.transaction;
 import com.example.gestionwallet.services.servicetransaction;
-
 
 public class WalletController {
 
@@ -21,6 +21,7 @@ public class WalletController {
     private double balance = 0;
     private VBox outcomeList;
     private VBox incomeList;
+
     private servicetransaction st = new servicetransaction();
 
     @FXML
@@ -41,11 +42,11 @@ public class WalletController {
         titleLabel.setStyle("-fx-font-size:18; -fx-font-weight:bold;");
 
         Button addBtn = new Button("+ Add");
-        addBtn.setOnAction(e -> openAddTransaction(isIncome));
-
         addBtn.setStyle(isIncome
                 ? "-fx-background-color:#2ecc71; -fx-text-fill:white;"
                 : "-fx-background-color:#e74c3c; -fx-text-fill:white;");
+
+        addBtn.setOnAction(e -> openAddTransaction(isIncome));
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -101,38 +102,98 @@ public class WalletController {
         balance = 0;
 
         for (transaction t : st.afficher()) {
-            addTransaction(t.getNom_transaction(), t.getMontant(), t.getType());
+            addTransaction(t);
         }
 
         updateBalanceLabel();
     }
 
-
-
-    private void addTransaction(String name, double amount, String type) {
+    private void addTransaction(transaction t) {
 
         HBox item = new HBox(10);
         item.setPadding(new Insets(10));
 
-        Label nameLabel = new Label(name);
+        Label nameLabel = new Label(t.getNom_transaction());
         nameLabel.setStyle("-fx-font-weight:bold;");
 
-        Label amountLabel = new Label(amount + " DT");
-        amountLabel.setStyle(amount >= 0
+        Label amountLabel = new Label(t.getMontant() + " DT");
+        amountLabel.setStyle(t.getMontant() >= 0
                 ? "-fx-text-fill:#2ecc71;"
                 : "-fx-text-fill:#e74c3c;");
+
+        Button editBtn = new Button("Modifier");
+        editBtn.setStyle("-fx-background-color:#3498db; -fx-text-fill:white;");
+
+        Button deleteBtn = new Button("Supprimer");
+        deleteBtn.setStyle("-fx-background-color:#e74c3c; -fx-text-fill:white;");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        item.getChildren().addAll(nameLabel, spacer, amountLabel);
+        item.getChildren().addAll(nameLabel, spacer, amountLabel, editBtn, deleteBtn);
 
-        if (type.equals("INCOME"))
+        // SUPPRIMER
+        deleteBtn.setOnAction(e -> {
+
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setHeaderText("Supprimer transaction ?");
+            confirm.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    st.supprimer(t.getId_transaction());
+                    loadTransactions();
+                }
+            });
+        });
+
+        // MODIFIER
+        editBtn.setOnAction(e -> {
+
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setTitle("Modifier Transaction");
+
+            TextField nameField = new TextField(t.getNom_transaction());
+            TextField amountField = new TextField(String.valueOf(t.getMontant()));
+
+            ComboBox<String> typeBox = new ComboBox<>();
+            typeBox.getItems().addAll("INCOME", "OUTCOME");
+            typeBox.setValue(t.getType());
+
+            VBox content = new VBox(10,
+                    new Label("Nom:"), nameField,
+                    new Label("Montant:"), amountField,
+                    new Label("Type:"), typeBox
+            );
+            content.setPadding(new Insets(10));
+
+            dialog.getDialogPane().setContent(content);
+            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+            dialog.showAndWait().ifPresent(response -> {
+
+                if (response == ButtonType.OK) {
+
+                    try {
+
+                        t.setNom_transaction(nameField.getText());
+                        t.setMontant(Double.parseDouble(amountField.getText()));
+                        t.setType(typeBox.getValue());
+
+                        st.modifier(t);
+                        loadTransactions();
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+        });
+
+        if (t.getType().equals("INCOME"))
             incomeList.getChildren().add(item);
         else
             outcomeList.getChildren().add(item);
 
-        balance += amount;
+        balance += t.getMontant();
     }
 
     private void updateBalanceLabel() {
