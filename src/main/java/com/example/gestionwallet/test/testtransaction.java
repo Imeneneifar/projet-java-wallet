@@ -1,53 +1,63 @@
 package com.example.gestionwallet.test;
 
+import com.example.gestionwallet.models.categorie;
 import com.example.gestionwallet.models.transaction;
+import com.example.gestionwallet.services.servicecategorie;
 import com.example.gestionwallet.services.servicetransaction;
 
 import java.sql.Date;
+import java.util.List;
 
 public class testtransaction {
 
     public static void main(String[] args) {
 
+        servicecategorie sc = new servicecategorie();
         servicetransaction st = new servicetransaction();
 
-        // ADD
+        // 1️⃣ نعمل Category جديدة
+        categorie cat = new categorie("TestCategory", "HAUTE", "INCOME");
+        sc.ajouter(cat);
+
+        // 2️⃣ نجيب آخر Category ID موجود
+        List<categorie> categories = sc.afficher();
+        int lastCategoryId = categories.get(categories.size() - 1).getId_category();
+
+        // 3️⃣ نعمل Transaction مربوطة بيها
         transaction t1 = new transaction(
-                "OUTCOME",
-                50,
-                Date.valueOf("2024-04-25"),
+                "Freelance Work",      // nom_transaction
+                "INCOME",
+                200.0,
+                Date.valueOf("2026-02-12"),
                 "MANUAL",
                 1,
-                1
+                lastCategoryId   // ✅ ID صحيح موجود
         );
+
         st.ajouter(t1);
 
-        transaction t3 = new transaction(
-                "INCOME",
-                150,
-                Date.valueOf("2025-04-25"),
-                "MANUAL",
-                1,
-                10
-        );
-        st.ajouter(t3);
-
-        // READ
+        // 4️⃣ نعرض Transactions
+        System.out.println("===== LISTE TRANSACTIONS =====");
         st.afficher().forEach(System.out::println);
 
-        // UPDATE
+        // 5️⃣ Update
         transaction t2 = new transaction(
                 1,
-                "OUTCOME",
-                70,
-                Date.valueOf("2024-04-26"),
+                "Freelance Updated",
+                "INCOME",
+                250.0,
+                Date.valueOf("2026-02-13"),
                 "MANUAL",
                 1,
-                2
+                lastCategoryId
         );
+
         st.modifier(t2);
 
-        // DELETE
-        // st.supprimer(1);
+        System.out.println("===== APRES UPDATE =====");
+        st.afficher().forEach(System.out::println);
+
+        // 6️⃣ Delete (اختياري)
+        // st.supprimer(t2.getId_transaction());
     }
 }

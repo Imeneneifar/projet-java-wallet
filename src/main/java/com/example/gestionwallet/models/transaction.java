@@ -5,18 +5,20 @@ import java.sql.Date;
 public class transaction {
 
     private int id_transaction;
-    private String type;      // INCOME / OUTCOME
+    private String nom_transaction;
+    private String type;
     private double montant;
     private Date date_transaction;
-    private String source;    // MANUAL / BOURSE / INVESTISSEMENT / OFFRE
+    private String source;
     private int user_id;
     private int category_id;
 
     public transaction() {}
 
-    // INSERT
-    public transaction(String type, double montant, Date date_transaction,
-                       String source, int user_id, int category_id) {
+    public transaction(String nom_transaction, String type, double montant,
+                       Date date_transaction, String source,
+                       int user_id, int category_id) {
+        this.nom_transaction = nom_transaction;
         this.type = type;
         this.montant = montant;
         this.date_transaction = date_transaction;
@@ -25,10 +27,12 @@ public class transaction {
         this.category_id = category_id;
     }
 
-    // FULL
-    public transaction(int id_transaction, String type, double montant, Date date_transaction,
+    public transaction(int id_transaction, String nom_transaction, String type,
+                       double montant, Date date_transaction,
                        String source, int user_id, int category_id) {
+
         this.id_transaction = id_transaction;
+        this.nom_transaction = nom_transaction;
         this.type = type;
         this.montant = montant;
         this.date_transaction = date_transaction;
@@ -37,9 +41,11 @@ public class transaction {
         this.category_id = category_id;
     }
 
-    // Getters & Setters
     public int getId_transaction() { return id_transaction; }
     public void setId_transaction(int id_transaction) { this.id_transaction = id_transaction; }
+
+    public String getNom_transaction() { return nom_transaction; }
+    public void setNom_transaction(String nom_transaction) { this.nom_transaction = nom_transaction; }
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
@@ -61,6 +67,13 @@ public class transaction {
 
     @Override
     public String toString() {
-        return id_transaction + " | " + type + " | " + montant + " DT | " + source;
+        return "ID: " + id_transaction +
+                " | Nom: " + nom_transaction +
+                " | Type: " + type +
+                " | Montant: " + montant + " DT" +
+                " | Date: " + date_transaction +
+                " | Source: " + source +
+                " | Category ID: " + category_id;
     }
+
 }

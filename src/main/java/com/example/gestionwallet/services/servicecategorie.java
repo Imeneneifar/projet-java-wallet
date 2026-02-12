@@ -19,38 +19,42 @@ public class servicecategorie implements Iservicecategorie {
     @Override
     public void ajouter(categorie c) {
 
-        if (existsByName(c.getNom())) {
-            System.out.println(" Catégorie déjà existante — ajout annulé");
+        if (existsByName(c.getNom(), c.getType())) {
+            System.out.println("Catégorie déjà existante — ajout annulé");
             return;
         }
 
-        String sql = "INSERT INTO category (nom, priorite) VALUES (?, ?)";
+        String sql = "INSERT INTO category (nom, priorite, type) VALUES (?, ?, ?)";
 
         try {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ps.setString(1, c.getNom());
             ps.setString(2, c.getPriorite());
+            ps.setString(3, c.getType());
             ps.executeUpdate();
 
-            System.out.println(" Catégorie ajoutée");
+            System.out.println("Catégorie ajoutée");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-
     @Override
     public void modifier(categorie c) {
-        String sql = "UPDATE category SET nom=?, priorite=? WHERE id_category=?";
+
+        String sql = "UPDATE category SET nom=?, priorite=?, type=? WHERE id_category=?";
 
         try {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ps.setString(1, c.getNom());
             ps.setString(2, c.getPriorite());
-            ps.setInt(3, c.getId_category());
+            ps.setString(3, c.getType());
+            ps.setInt(4, c.getId_category());
             ps.executeUpdate();
-            System.out.println(" Catégorie modifiée");
+
+            System.out.println("Catégorie modifiée");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -58,13 +62,16 @@ public class servicecategorie implements Iservicecategorie {
 
     @Override
     public void supprimer(int id) {
+
         String sql = "DELETE FROM category WHERE id_category=?";
 
         try {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ps.setInt(1, id);
             ps.executeUpdate();
-            System.out.println(" Catégorie supprimée");
+
+            System.out.println("Catégorie supprimée");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -72,6 +79,7 @@ public class servicecategorie implements Iservicecategorie {
 
     @Override
     public List<categorie> afficher() {
+
         List<categorie> list = new ArrayList<>();
         String sql = "SELECT * FROM category";
 
@@ -80,13 +88,17 @@ public class servicecategorie implements Iservicecategorie {
             ResultSet rs = st.executeQuery(sql);
 
             while (rs.next()) {
+
                 categorie c = new categorie(
                         rs.getInt("id_category"),
                         rs.getString("nom"),
-                        rs.getString("priorite")
+                        rs.getString("priorite"),
+                        rs.getString("type")
                 );
+
                 list.add(c);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -94,14 +106,17 @@ public class servicecategorie implements Iservicecategorie {
         return list;
     }
 
-    public boolean existsByName(String nom) {
-        String sql = "SELECT COUNT(*) FROM category WHERE LOWER(nom) = LOWER(?)";
+    public boolean existsByName(String nom, String type) {
+
+        String sql = "SELECT COUNT(*) FROM category WHERE LOWER(nom)=LOWER(?) AND type=?";
 
         try {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ps.setString(1, nom);
+            ps.setString(2, type);
 
             ResultSet rs = ps.executeQuery();
+
             if (rs.next()) {
                 return rs.getInt(1) > 0;
             }
@@ -109,7 +124,7 @@ public class servicecategorie implements Iservicecategorie {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return false;
     }
-
 }

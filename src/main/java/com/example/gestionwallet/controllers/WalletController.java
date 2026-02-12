@@ -1,58 +1,50 @@
 package com.example.gestionwallet.controllers;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+
+import com.example.gestionwallet.utils.database;
 
 public class WalletController {
 
-    @FXML
-    private VBox outcomeBox;
+    @FXML private VBox outcomeBox;
+    @FXML private VBox incomeBox;
+    @FXML private Label balanceLabel;
 
-    @FXML
-    private VBox incomeBox;
+    private double balance = 0;
+    private VBox outcomeList;
+    private VBox incomeList;
 
     @FXML
     public void initialize() {
 
-        // ===== Outcome card =====
         VBox outcomeCard = createCard("Outcome", false);
-        VBox outcomeList = (VBox) ((ScrollPane) outcomeCard.getChildren().get(1)).getContent();
-
-        outcomeList.getChildren().addAll(
-                createItem("Transport", "20 DT • 24/04/2024", "-30 DT", false),
-                createItem("Groceries", "15 DT • 23/04/2024", "-50 DT", false),
-                createItem("Electricity", "80 DT • 22/04/2024", "-80 DT", false)
-        );
-
-        // ===== Income card =====
         VBox incomeCard = createCard("Income", true);
-        VBox incomeList = (VBox) ((ScrollPane) incomeCard.getChildren().get(1)).getContent();
-
-        incomeList.getChildren().addAll(
-                createItem("Salary", "25/04/2024", "+1500 DT", true),
-                createItem("Freelance", "23/04/2024", "+400 DT", true),
-                createItem("Gift", "18/04/2024", "+100 DT", true)
-        );
 
         outcomeBox.getChildren().add(outcomeCard);
         incomeBox.getChildren().add(incomeCard);
+
+        loadTransactions();
     }
 
-    // ================= CARD =================
     private VBox createCard(String title, boolean isIncome) {
 
         Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size:18px; -fx-font-weight:bold;");
+        titleLabel.setStyle("-fx-font-size:18; -fx-font-weight:bold;");
 
         Button addBtn = new Button("+ Add");
+        addBtn.setOnAction(e -> openAddTransaction(isIncome));
+
         addBtn.setStyle(isIncome
                 ? "-fx-background-color:#2ecc71; -fx-text-fill:white;"
                 : "-fx-background-color:#e74c3c; -fx-text-fill:white;");
@@ -61,10 +53,12 @@ public class WalletController {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         HBox header = new HBox(10, titleLabel, spacer, addBtn);
-        header.setAlignment(Pos.CENTER_LEFT);
 
         VBox list = new VBox(10);
-        list.setPadding(new Insets(5));
+        list.setPadding(new Insets(10));
+
+        if (isIncome) incomeList = list;
+        else outcomeList = list;
 
         ScrollPane scrollPane = new ScrollPane(list);
         scrollPane.setFitToWidth(true);
@@ -72,48 +66,117 @@ public class WalletController {
 
         VBox card = new VBox(15, header, scrollPane);
         card.setPadding(new Insets(20));
-        card.setPrefWidth(400);
+        card.setPrefWidth(420);
         card.setStyle("""
-                -fx-background-color: white;
-                -fx-background-radius: 16;
-                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 15, 0, 0, 5);
+                -fx-background-color:white;
+                -fx-background-radius:16;
+                -fx-effect:dropshadow(gaussian, rgba(0,0,0,0.15), 15, 0, 0, 5);
                 """);
 
         return card;
     }
 
-    // ================= ITEM =================
-    private HBox createItem(String title, String date, String amount, boolean isIncome) {
+    private void openAddTransaction(boolean isIncome) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/gestionwallet/add-transaction.fxml")
+            );
 
-        Label icon = new Label(isIncome ? "💼" : "💸");
-        icon.setStyle("-fx-font-size:20px;");
+            Stage stage = new Stage();
+            Scene scene = new Scene(loader.load());
 
-        Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-weight:bold;");
+            AddTransactionController controller = loader.getController();
+            controller.setType(isIncome ? "INCOME" : "OUTCOME");
+            controller.setParentController(this);
 
-        Label dateLabel = new Label(date);
-        dateLabel.setStyle("-fx-text-fill:#777;");
+            stage.setScene(scene);
+            stage.setTitle("Add Transaction");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
 
-        VBox info = new VBox(4, titleLabel, dateLabel);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-        Label amountLabel = new Label(amount);
-        amountLabel.setStyle(isIncome
-                ? "-fx-text-fill:#2ecc71; -fx-font-weight:bold;"
-                : "-fx-text-fill:#e74c3c; -fx-font-weight:bold;");
+    public void loadTransactions() {
 
-        Button editBtn = new Button("✏");
+        incomeList.getChildren().clear();
+        outcomeList.getChildren().clear();
+        balance = 0;
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+        try {
 
-        HBox item = new HBox(10, icon, info, spacer, amountLabel, editBtn);
-        item.setAlignment(Pos.CENTER_LEFT);
+            Connection cnx = database.getInstance().getConnection();
+
+            String sql = """
+                    SELECT t.nom_transaction,
+                           t.type,
+                           t.montant,
+                           c.nom AS category_name
+                    FROM transaction t
+                    JOIN category c ON t.category_id = c.id_category
+                    """;
+
+            Statement st = cnx.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+
+            while (rs.next()) {
+
+                String name = rs.getString("nom_transaction");
+                String type = rs.getString("type");
+                double amount = rs.getDouble("montant");
+                String category = rs.getString("category_name");
+
+                addTransaction(name, category, amount, type);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        updateBalanceLabel();
+    }
+
+    private void addTransaction(String name, String category, double amount, String type) {
+
+        HBox item = new HBox(10);
         item.setPadding(new Insets(10));
         item.setStyle("""
                 -fx-background-color:#f8f9fb;
                 -fx-background-radius:12;
                 """);
 
-        return item;
+        // 🔥 اسم الترانزاكسيون + الكاتيجوري
+        Label nameLabel = new Label(name + " (" + category + ")");
+        nameLabel.setStyle("-fx-font-weight:bold;");
+
+        Label amountLabel = new Label(amount + " DT");
+
+        amountLabel.setStyle(amount >= 0
+                ? "-fx-text-fill:#2ecc71;"
+                : "-fx-text-fill:#e74c3c;");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        item.getChildren().addAll(nameLabel, spacer, amountLabel);
+
+        if (type.equals("INCOME")) {
+            incomeList.getChildren().add(item);
+        } else {
+            outcomeList.getChildren().add(item);
+        }
+
+        balance += amount;
+    }
+
+    private void updateBalanceLabel() {
+
+        balanceLabel.setText("Balance: " + balance + " DT");
+
+        balanceLabel.setStyle(balance < 0
+                ? "-fx-font-size:26; -fx-font-weight:bold; -fx-text-fill:red;"
+                : "-fx-font-size:26; -fx-font-weight:bold; -fx-text-fill:#1f7f4c;");
     }
 }

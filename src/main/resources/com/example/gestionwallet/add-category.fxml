@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.gestionwallet.controllers.AddCategoryController">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Manage Categories"
+           style="-fx-font-size:18; -fx-font-weight:bold;"/>
+
+    <TextField fx:id="nameField" promptText="Nom de catégorie"/>
+
+    <ComboBox fx:id="priorityBox" promptText="Priorité"/>
+
+    <Button text="+ Ajouter Catégorie"
+            onAction="#saveCategory"/>
+
+</VBox>
