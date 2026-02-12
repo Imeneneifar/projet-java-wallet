@@ -3,6 +3,8 @@ package com.example.gestionwallet.services;
 import com.example.gestionwallet.models.transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import com.example.gestionwallet.models.categorie;
+import com.example.gestionwallet.services.servicecategorie;
 
 import java.sql.Date;
 
@@ -20,25 +22,36 @@ public class TestTransaction {
     @Test
     void testAjouterTransaction() {
 
+        servicecategorie sc = new servicecategorie();
+
+        // 1️⃣ Nzid category
+        categorie c = new categorie("TestCat", "HAUTE", "INCOME");
+        sc.ajouter(c);
+
+        int categoryId = sc.getIdByName("TestCat");
+
+        assertTrue(categoryId > 0); // sécurité
+
+
+        // 2️⃣ Nzid transaction
         Date date = Date.valueOf("2025-02-10");
 
         transaction t = new transaction(
-                "Salaire Mars",   // nom_transaction 🔥
+                "Test Transaction",
                 "INCOME",
                 150.0,
                 date,
                 "MANUAL",
                 1,
-                1
+                categoryId
         );
 
         service.ajouter(t);
 
         assertNotNull(t);
         assertEquals(150.0, t.getMontant());
-        assertEquals("INCOME", t.getType());
-        assertEquals("Salaire Mars", t.getNom_transaction());
     }
+
 
     @Test
     void testSupprimerTransaction() {

@@ -4,6 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import com.example.gestionwallet.models.categorie;
+import com.example.gestionwallet.services.servicecategorie;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,8 +16,9 @@ public class AddCategoryController {
 
     @FXML private TextField nameField;
     @FXML private ComboBox<String> priorityBox;
+    private servicecategorie sc = new servicecategorie();
 
-    private String categoryType;
+    private String categoryType; // INCOME / OUTCOME
 
     @FXML
     public void initialize() {
@@ -34,22 +37,11 @@ public class AddCategoryController {
 
         if (name == null || name.isEmpty() || priority == null) return;
 
-        try {
-            Connection cnx = database.getInstance().getConnection();
+        categorie c = new categorie(name, priority, categoryType);
+        sc.ajouter(c);
 
-            String sql = "INSERT INTO category (nom, priorite, type) VALUES (?, ?, ?)";
-
-            PreparedStatement ps = cnx.prepareStatement(sql);
-            ps.setString(1, name);
-            ps.setString(2, priority);
-            ps.setString(3, categoryType);
-
-            ps.executeUpdate();
-
-            ((Stage) nameField.getScene().getWindow()).close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ((Stage) nameField.getScene().getWindow()).close();
     }
+
+
 }

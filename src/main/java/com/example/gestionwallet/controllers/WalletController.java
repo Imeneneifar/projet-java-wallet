@@ -8,6 +8,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import com.example.gestionwallet.models.transaction;
+import com.example.gestionwallet.services.servicetransaction;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -24,6 +26,7 @@ public class WalletController {
     private double balance = 0;
     private VBox outcomeList;
     private VBox incomeList;
+    private servicetransaction st = new servicetransaction();
 
     @FXML
     public void initialize() {
@@ -67,17 +70,14 @@ public class WalletController {
         VBox card = new VBox(15, header, scrollPane);
         card.setPadding(new Insets(20));
         card.setPrefWidth(420);
-        card.setStyle("""
-                -fx-background-color:white;
-                -fx-background-radius:16;
-                -fx-effect:dropshadow(gaussian, rgba(0,0,0,0.15), 15, 0, 0, 5);
-                """);
 
         return card;
     }
 
     private void openAddTransaction(boolean isIncome) {
+
         try {
+
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/com/example/gestionwallet/add-transaction.fxml")
             );
@@ -105,54 +105,24 @@ public class WalletController {
         outcomeList.getChildren().clear();
         balance = 0;
 
-        try {
-
-            Connection cnx = database.getInstance().getConnection();
-
-            String sql = """
-                    SELECT t.nom_transaction,
-                           t.type,
-                           t.montant,
-                           c.nom AS category_name
-                    FROM transaction t
-                    JOIN category c ON t.category_id = c.id_category
-                    """;
-
-            Statement st = cnx.createStatement();
-            ResultSet rs = st.executeQuery(sql);
-
-            while (rs.next()) {
-
-                String name = rs.getString("nom_transaction");
-                String type = rs.getString("type");
-                double amount = rs.getDouble("montant");
-                String category = rs.getString("category_name");
-
-                addTransaction(name, category, amount, type);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (transaction t : st.afficher()) {
+            addTransaction(t.getNom_transaction(), t.getMontant(), t.getType());
         }
 
         updateBalanceLabel();
     }
 
-    private void addTransaction(String name, String category, double amount, String type) {
+
+
+    private void addTransaction(String name, double amount, String type) {
 
         HBox item = new HBox(10);
         item.setPadding(new Insets(10));
-        item.setStyle("""
-                -fx-background-color:#f8f9fb;
-                -fx-background-radius:12;
-                """);
 
-        // 🔥 اسم الترانزاكسيون + الكاتيجوري
-        Label nameLabel = new Label(name + " (" + category + ")");
+        Label nameLabel = new Label(name);
         nameLabel.setStyle("-fx-font-weight:bold;");
 
         Label amountLabel = new Label(amount + " DT");
-
         amountLabel.setStyle(amount >= 0
                 ? "-fx-text-fill:#2ecc71;"
                 : "-fx-text-fill:#e74c3c;");
@@ -162,11 +132,10 @@ public class WalletController {
 
         item.getChildren().addAll(nameLabel, spacer, amountLabel);
 
-        if (type.equals("INCOME")) {
+        if (type.equals("INCOME"))
             incomeList.getChildren().add(item);
-        } else {
+        else
             outcomeList.getChildren().add(item);
-        }
 
         balance += amount;
     }

@@ -10,6 +10,9 @@ import javafx.stage.Stage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import com.example.gestionwallet.models.transaction;
+import com.example.gestionwallet.services.servicetransaction;
+import com.example.gestionwallet.services.servicecategorie;
 
 import com.example.gestionwallet.utils.database;
 
@@ -23,6 +26,8 @@ public class AddTransactionController {
 
     private WalletController parentController;
     private String currentType;
+    private servicetransaction st = new servicetransaction();
+    private servicecategorie sc = new servicecategorie();
 
     @FXML
     public void initialize() {
@@ -42,6 +47,8 @@ public class AddTransactionController {
 
     private void loadCategoriesByType(String type) {
 
+        categoryBox.getItems().clear();
+
         try {
             Connection cnx = database.getInstance().getConnection();
 
@@ -50,8 +57,6 @@ public class AddTransactionController {
             ps.setString(1, type);
 
             ResultSet rs = ps.executeQuery();
-
-            categoryBox.getItems().clear();
 
             while (rs.next()) {
                 categoryBox.getItems().add(rs.getString("nom"));
@@ -93,24 +98,19 @@ public class AddTransactionController {
                 amount = -amount;
             }
 
-            int categoryId = getCategoryIdByName(categoryName);
+            int categoryId = sc.getIdByName(categoryName);
 
-            Connection cnx = database.getInstance().getConnection();
+            transaction t = new transaction(
+                    name,
+                    type,
+                    amount,
+                    java.sql.Date.valueOf(datePicker.getValue()),
+                    "MANUAL",
+                    1,
+                    categoryId
+            );
 
-            String sql = """
-                    INSERT INTO transaction
-                    (nom_transaction, type, montant, date_transaction, source, user_id, category_id)
-                    VALUES (?, ?, ?, ?, 'MANUAL', 1, ?)
-                    """;
-
-            PreparedStatement ps = cnx.prepareStatement(sql);
-            ps.setString(1, name);
-            ps.setString(2, type);
-            ps.setDouble(3, amount);
-            ps.setDate(4, java.sql.Date.valueOf(datePicker.getValue()));
-            ps.setInt(5, categoryId);
-
-            ps.executeUpdate();
+            st.ajouter(t);
 
             parentController.loadTransactions();
 
@@ -120,6 +120,8 @@ public class AddTransactionController {
             e.printStackTrace();
         }
     }
+
+
 
     @FXML
     private void openAddCategory() {
@@ -135,13 +137,10 @@ public class AddTransactionController {
             stage.initModality(Modality.APPLICATION_MODAL);
 
             AddCategoryController controller = loader.getController();
-
-            // 🔥 المهم
             controller.setCategoryType(currentType);
 
             stage.showAndWait();
 
-            // 🔥 refresh بعد الإضافة
             loadCategoriesByType(currentType);
 
         } catch (Exception e) {

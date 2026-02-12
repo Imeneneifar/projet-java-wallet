@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
 
@@ -12,19 +13,40 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
+    <!-- TITLE -->
     <Label text="Add Transaction"
            style="-fx-font-size:18; -fx-font-weight:bold;"/>
 
-    <TextField fx:id="nameField" promptText="Nom transaction"/>
+    <!-- NAME -->
+    <TextField fx:id="nameField"
+               promptText="Nom transaction"/>
 
-    <TextField fx:id="amountField" promptText="Montant"/>
+    <!-- AMOUNT -->
+    <TextField fx:id="amountField"
+               promptText="Montant"/>
 
+    <!-- DATE -->
     <DatePicker fx:id="datePicker"/>
 
-    <ComboBox fx:id="categoryBox" promptText="Category"/>
+    <!-- CATEGORY + ADD BUTTON -->
+    <HBox spacing="10">
 
-    <ComboBox fx:id="typeBox"/>
+        <ComboBox fx:id="categoryBox"
+                  promptText="Category"
+                  HBox.hgrow="ALWAYS"/>
 
-    <Button text="Save" onAction="#saveTransaction"/>
+        <Button text="+"
+                onAction="#openAddCategory"
+                style="-fx-background-color:#2ecc71; -fx-text-fill:white;"/>
+
+    </HBox>
+
+    <!-- TYPE -->
+    <ComboBox fx:id="typeBox"
+              promptText="Type"/>
+
+    <!-- SAVE -->
+    <Button text="Save"
+            onAction="#saveTransaction"/>
 
 </VBox>

@@ -127,4 +127,25 @@ public class servicecategorie implements Iservicecategorie {
 
         return false;
     }
+
+    public int getIdByName(String nom) {
+        String sql = "SELECT id_category FROM category WHERE nom = ?";
+
+        try {
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setString(1, nom);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id_category");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return -1; // important
+    }
+
+
 }
