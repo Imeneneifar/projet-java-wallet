@@ -7,14 +7,12 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import com.example.gestionwallet.models.transaction;
+import com.example.gestionwallet.models.categorie;
 import com.example.gestionwallet.services.servicetransaction;
 import com.example.gestionwallet.services.servicecategorie;
 
-import com.example.gestionwallet.utils.database;
+import java.util.List;
 
 public class AddTransactionController {
 
@@ -26,6 +24,7 @@ public class AddTransactionController {
 
     private WalletController parentController;
     private String currentType;
+
     private servicetransaction st = new servicetransaction();
     private servicecategorie sc = new servicecategorie();
 
@@ -49,39 +48,13 @@ public class AddTransactionController {
 
         categoryBox.getItems().clear();
 
-        try {
-            Connection cnx = database.getInstance().getConnection();
+        List<categorie> list = sc.afficher();
 
-            String sql = "SELECT nom FROM category WHERE type = ?";
-            PreparedStatement ps = cnx.prepareStatement(sql);
-            ps.setString(1, type);
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                categoryBox.getItems().add(rs.getString("nom"));
+        for (categorie c : list) {
+            if (c.getType().equals(type)) {
+                categoryBox.getItems().add(c.getNom());
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-    }
-
-    private int getCategoryIdByName(String name) throws Exception {
-
-        Connection cnx = database.getInstance().getConnection();
-
-        String sql = "SELECT id_category FROM category WHERE nom = ?";
-        PreparedStatement ps = cnx.prepareStatement(sql);
-        ps.setString(1, name);
-
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            return rs.getInt("id_category");
-        }
-
-        throw new Exception("Category not found");
     }
 
     @FXML
@@ -120,8 +93,6 @@ public class AddTransactionController {
             e.printStackTrace();
         }
     }
-
-
 
     @FXML
     private void openAddCategory() {

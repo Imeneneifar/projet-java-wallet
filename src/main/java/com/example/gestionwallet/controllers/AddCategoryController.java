@@ -7,10 +7,7 @@ import javafx.stage.Stage;
 import com.example.gestionwallet.models.categorie;
 import com.example.gestionwallet.services.servicecategorie;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 
-import com.example.gestionwallet.utils.database;
 
 public class AddCategoryController {
 

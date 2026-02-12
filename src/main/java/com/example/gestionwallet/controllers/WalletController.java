@@ -11,11 +11,6 @@ import javafx.stage.Stage;
 import com.example.gestionwallet.models.transaction;
 import com.example.gestionwallet.services.servicetransaction;
 
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-
-import com.example.gestionwallet.utils.database;
 
 public class WalletController {
 
