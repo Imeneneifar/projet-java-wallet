@@ -39,7 +39,7 @@ public class WalletController {
     private VBox createCard(String title, boolean isIncome) {
 
         Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size:18; -fx-font-weight:bold;");
+        titleLabel.setStyle("-fx-font-size:18; -fx-font-weight:bold; -fx-text-fill:white;");
 
         Button addBtn = new Button("+ Add");
         addBtn.setStyle(isIncome
@@ -66,6 +66,7 @@ public class WalletController {
         VBox card = new VBox(15, header, scrollPane);
         card.setPadding(new Insets(20));
         card.setPrefWidth(420);
+        card.setStyle("-fx-background-color:#273c55; -fx-background-radius:20;");
 
         return card;
     }
@@ -112,9 +113,10 @@ public class WalletController {
 
         HBox item = new HBox(10);
         item.setPadding(new Insets(10));
+        item.setStyle("-fx-background-color:#34495e; -fx-background-radius:10;");
 
         Label nameLabel = new Label(t.getNom_transaction());
-        nameLabel.setStyle("-fx-font-weight:bold;");
+        nameLabel.setStyle("-fx-font-weight:bold; -fx-text-fill:white;");
 
         Label amountLabel = new Label(t.getMontant() + " DT");
         amountLabel.setStyle(t.getMontant() >= 0
@@ -132,7 +134,7 @@ public class WalletController {
 
         item.getChildren().addAll(nameLabel, spacer, amountLabel, editBtn, deleteBtn);
 
-        // ================= SUPPRIMER =================
+        // SUPPRIMER
         deleteBtn.setOnAction(e -> {
 
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
@@ -145,41 +147,68 @@ public class WalletController {
             });
         });
 
-        // ================= MODIFIER (NO TYPE) =================
+        // MODIFIER POPUP MODERNE
         editBtn.setOnAction(e -> {
 
-            Dialog<ButtonType> dialog = new Dialog<>();
-            dialog.setTitle("Modifier Transaction");
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setTitle("Modifier Transaction");
+
+            VBox card = new VBox(20);
+            card.setPadding(new Insets(30));
+            card.setStyle("-fx-background-color:#273c55; -fx-background-radius:20;");
+
+            Label title = new Label("Modifier Transaction");
+            title.setStyle("-fx-text-fill:white; -fx-font-size:18; -fx-font-weight:bold;");
+
+            Label nameLabelPopup = new Label("Nom:");
+            nameLabelPopup.setStyle("-fx-text-fill:#dcdde1;");
 
             TextField nameField = new TextField(t.getNom_transaction());
+            nameField.setStyle("-fx-background-color:#34495e; -fx-text-fill:white; -fx-background-radius:10;");
+
+            Label amountLabelPopup = new Label("Montant:");
+            amountLabelPopup.setStyle("-fx-text-fill:#dcdde1;");
+
             TextField amountField = new TextField(String.valueOf(t.getMontant()));
+            amountField.setStyle("-fx-background-color:#34495e; -fx-text-fill:white; -fx-background-radius:10;");
 
-            VBox content = new VBox(10,
-                    new Label("Nom:"), nameField,
-                    new Label("Montant:"), amountField
+            Button saveBtn = new Button("Enregistrer");
+            saveBtn.setStyle("-fx-background-color:#2ecc71; -fx-text-fill:white; -fx-background-radius:10;");
+
+            Button cancelBtn = new Button("Annuler");
+            cancelBtn.setStyle("-fx-background-color:#e74c3c; -fx-text-fill:white; -fx-background-radius:10;");
+
+            HBox buttons = new HBox(15, cancelBtn, saveBtn);
+
+            card.getChildren().addAll(
+                    title,
+                    nameLabelPopup, nameField,
+                    amountLabelPopup, amountField,
+                    buttons
             );
-            content.setPadding(new Insets(10));
 
-            dialog.getDialogPane().setContent(content);
-            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+            StackPane root = new StackPane(card);
+            root.setStyle("-fx-background-color:#1e2a3a;");
 
-            dialog.showAndWait().ifPresent(response -> {
+            Scene scene = new Scene(root, 400, 300);
+            dialogStage.setScene(scene);
 
-                if (response == ButtonType.OK) {
-
-                    try {
-
-                        t.setNom_transaction(nameField.getText());
-                        t.setMontant(Double.parseDouble(amountField.getText()));
-
-                        st.modifier(t);  // update DB
-                        loadTransactions();
-
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+            saveBtn.setOnAction(ev -> {
+                try {
+                    t.setNom_transaction(nameField.getText());
+                    t.setMontant(Double.parseDouble(amountField.getText()));
+                    st.modifier(t);
+                    loadTransactions();
+                    dialogStage.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             });
+
+            cancelBtn.setOnAction(ev -> dialogStage.close());
+
+            dialogStage.showAndWait();
         });
 
         if (t.getType().equals("INCOME"))
@@ -196,6 +225,6 @@ public class WalletController {
 
         balanceLabel.setStyle(balance < 0
                 ? "-fx-font-size:26; -fx-font-weight:bold; -fx-text-fill:red;"
-                : "-fx-font-size:26; -fx-font-weight:bold; -fx-text-fill:#1f7f4c;");
+                : "-fx-font-size:26; -fx-font-weight:bold; -fx-text-fill:#2ecc71;");
     }
 }

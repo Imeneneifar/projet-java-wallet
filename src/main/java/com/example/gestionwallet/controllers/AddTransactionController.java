@@ -20,7 +20,7 @@ public class AddTransactionController {
     @FXML private TextField amountField;
     @FXML private DatePicker datePicker;
     @FXML private ComboBox<String> categoryBox;
-    @FXML private ComboBox<String> typeBox;
+    @FXML private Label typeLabel;
 
     private WalletController parentController;
     private String currentType;
@@ -30,7 +30,7 @@ public class AddTransactionController {
 
     @FXML
     public void initialize() {
-        typeBox.getItems().addAll("OUTCOME", "INCOME");
+        // nothing special here now
     }
 
     public void setParentController(WalletController controller) {
@@ -38,9 +38,17 @@ public class AddTransactionController {
     }
 
     public void setType(String type) {
+
         this.currentType = type;
-        typeBox.setValue(type);
-        typeBox.setDisable(true);
+
+        typeLabel.setText(type);
+
+        if(type.equals("INCOME")){
+            typeLabel.setStyle("-fx-text-fill:#2ecc71; -fx-font-weight:bold;");
+        } else {
+            typeLabel.setStyle("-fx-text-fill:#e74c3c; -fx-font-weight:bold;");
+        }
+
         loadCategoriesByType(type);
     }
 
@@ -64,7 +72,7 @@ public class AddTransactionController {
 
             String name = nameField.getText();
             double amount = Double.parseDouble(amountField.getText());
-            String type = typeBox.getValue();
+            String type = currentType;
             String categoryName = categoryBox.getValue();
 
             if (type.equals("OUTCOME")) {

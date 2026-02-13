@@ -1,21 +1,25 @@
 package com.example.gestionwallet.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.geometry.Insets;
 import javafx.stage.Stage;
+
 import com.example.gestionwallet.models.categorie;
 import com.example.gestionwallet.services.servicecategorie;
 
-
+import java.util.List;
 
 public class AddCategoryController {
 
     @FXML private TextField nameField;
     @FXML private ComboBox<String> priorityBox;
-    private servicecategorie sc = new servicecategorie();
+    @FXML private VBox categoryListBox;
 
-    private String categoryType; // INCOME / OUTCOME
+    private servicecategorie sc = new servicecategorie();
+    private String categoryType;
+    private int editingId = -1;
 
     @FXML
     public void initialize() {
@@ -24,6 +28,7 @@ public class AddCategoryController {
 
     public void setCategoryType(String type) {
         this.categoryType = type;
+        loadCategories();
     }
 
     @FXML
@@ -34,11 +39,103 @@ public class AddCategoryController {
 
         if (name == null || name.isEmpty() || priority == null) return;
 
-        categorie c = new categorie(name, priority, categoryType);
-        sc.ajouter(c);
+        if (editingId == -1) {
 
-        ((Stage) nameField.getScene().getWindow()).close();
+            categorie c = new categorie(name, priority, categoryType);
+            sc.ajouter(c);
+
+        } else {
+
+            categorie c = new categorie(editingId, name, priority, categoryType);
+            sc.modifier(c);
+            editingId = -1;
+        }
+
+        nameField.clear();
+        priorityBox.setValue(null);
+
+        loadCategories();
     }
 
+    private void loadCategories() {
 
+        categoryListBox.getChildren().clear();
+
+        GridPane table = new GridPane();
+        table.setHgap(40);
+        table.setVgap(15);
+        table.setPadding(new Insets(10));
+
+        // ===== HEADER =====
+        Label headerNom = new Label("Nom Catégorie");
+        headerNom.setStyle("-fx-text-fill:white; -fx-font-weight:bold;");
+
+        Label headerPriorite = new Label("Priorité");
+        headerPriorite.setStyle("-fx-text-fill:white; -fx-font-weight:bold;");
+
+        Label headerAction = new Label("Actions");
+        headerAction.setStyle("-fx-text-fill:white; -fx-font-weight:bold;");
+
+        table.add(headerNom, 0, 0);
+        table.add(headerPriorite, 1, 0);
+        table.add(headerAction, 2, 0);
+
+        int row = 1;
+
+        List<categorie> list = sc.afficher();
+
+        for (categorie c : list) {
+
+            if (!c.getType().equals(categoryType)) continue;
+
+            Label nomLabel = new Label(c.getNom());
+            nomLabel.setStyle("-fx-text-fill:white;");
+
+            Label prioriteLabel = new Label(c.getPriorite());
+            prioriteLabel.setStyle(getPriorityStyle(c.getPriorite()));
+
+            Button editBtn = new Button("Modifier");
+            editBtn.setStyle("-fx-background-color:#3498db; -fx-text-fill:white;");
+
+            Button deleteBtn = new Button("Supprimer");
+            deleteBtn.setStyle("-fx-background-color:#e74c3c; -fx-text-fill:white;");
+
+            HBox actions = new HBox(10, editBtn, deleteBtn);
+
+            table.add(nomLabel, 0, row);
+            table.add(prioriteLabel, 1, row);
+            table.add(actions, 2, row);
+
+            // SUPPRIMER
+            deleteBtn.setOnAction(e -> {
+                sc.supprimer(c.getId_category());
+                loadCategories();
+            });
+
+            // MODIFIER
+            editBtn.setOnAction(e -> {
+                nameField.setText(c.getNom());
+                priorityBox.setValue(c.getPriorite());
+                editingId = c.getId_category();
+            });
+
+            row++;
+        }
+
+        categoryListBox.getChildren().add(table);
+    }
+
+    private String getPriorityStyle(String priority) {
+
+        switch (priority) {
+            case "HAUTE":
+                return "-fx-text-fill:#e74c3c; -fx-font-weight:bold;";
+            case "MOYENNE":
+                return "-fx-text-fill:#f1c40f; -fx-font-weight:bold;";
+            case "BASSE":
+                return "-fx-text-fill:#2ecc71; -fx-font-weight:bold;";
+            default:
+                return "-fx-text-fill:white;";
+        }
+    }
 }

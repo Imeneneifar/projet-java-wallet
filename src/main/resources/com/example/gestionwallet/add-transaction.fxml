@@ -1,52 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
 
-<VBox spacing="15"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.gestionwallet.controllers.AddTransactionController">
+<StackPane prefWidth="900" prefHeight="650"
+           stylesheets="@dashboard.css"
+           xmlns="http://javafx.com/javafx/8"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.gestionwallet.controllers.AddTransactionController">
 
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
+    <VBox spacing="25"
+          maxWidth="650"
+          styleClass="card">
 
-    <!-- TITLE -->
-    <Label text="Add Transaction"
-           style="-fx-font-size:18; -fx-font-weight:bold;"/>
+        <Label text="Ajouter Transaction"
+               styleClass="title-label"/>
 
-    <!-- NAME -->
-    <TextField fx:id="nameField"
-               promptText="Nom transaction"/>
+        <VBox spacing="10">
+            <Label text="Nom"/>
+            <TextField fx:id="nameField"/>
+        </VBox>
 
-    <!-- AMOUNT -->
-    <TextField fx:id="amountField"
-               promptText="Montant"/>
+        <VBox spacing="10">
+            <Label text="Montant"/>
+            <TextField fx:id="amountField"/>
+        </VBox>
 
-    <!-- DATE -->
-    <DatePicker fx:id="datePicker"/>
+        <VBox spacing="10">
+            <Label text="Date"/>
+            <DatePicker fx:id="datePicker" prefWidth="250"/>
+        </VBox>
 
-    <!-- CATEGORY + ADD BUTTON -->
-    <HBox spacing="10">
+        <VBox spacing="10">
+            <Label text="Type"/>
+            <Label fx:id="typeLabel"
+                   style="-fx-font-weight:bold;"/>
+        </VBox>
 
-        <ComboBox fx:id="categoryBox"
-                  promptText="Category"
-                  HBox.hgrow="ALWAYS"/>
+        <VBox spacing="10">
+            <Label text="Catégorie"/>
+            <HBox spacing="10">
+                <ComboBox fx:id="categoryBox" prefWidth="300"/>
+                <Button text="+"
+                        styleClass="btn-blue"
+                        onAction="#openAddCategory"
+                        prefWidth="60"/>
+            </HBox>
+        </VBox>
 
-        <Button text="+"
-                onAction="#openAddCategory"
-                style="-fx-background-color:#2ecc71; -fx-text-fill:white;"/>
+        <Button text="Enregistrer"
+                styleClass="btn-green"
+                onAction="#saveTransaction"
+                prefWidth="250"/>
 
-    </HBox>
+    </VBox>
 
-    <!-- TYPE -->
-    <ComboBox fx:id="typeBox"
-              promptText="Type"/>
-
-    <!-- SAVE -->
-    <Button text="Save"
-            onAction="#saveTransaction"/>
-
-</VBox>
+</StackPane>

@@ -9,4 +9,5 @@ module com.example.gestionwallet {
     opens com.example.gestionwallet.models to javafx.base;
 
     exports com.example.gestionwallet;
+    exports com.example.gestionwallet.controllers;
 }

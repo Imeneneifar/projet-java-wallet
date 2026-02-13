@@ -1,25 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
 
-<VBox spacing="15"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.gestionwallet.controllers.AddCategoryController">
+<StackPane prefWidth="900" prefHeight="650"
+           stylesheets="@dashboard.css"
+           xmlns="http://javafx.com/javafx/8"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.gestionwallet.controllers.AddCategoryController">
 
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
+    <VBox spacing="25"
+          maxWidth="650"
+          styleClass="card">
 
-    <Label text="Manage Categories"
-           style="-fx-font-size:18; -fx-font-weight:bold;"/>
+        <Label text="Gestion des Catégories"
+               styleClass="title-label"/>
 
-    <TextField fx:id="nameField" promptText="Nom de catégorie"/>
+        <VBox spacing="10">
+            <Label text="Nom"/>
+            <TextField fx:id="nameField"/>
+        </VBox>
 
-    <ComboBox fx:id="priorityBox" promptText="Priorité"/>
+        <VBox spacing="10">
+            <Label text="Priorité"/>
+            <ComboBox fx:id="priorityBox" prefWidth="250"/>
+        </VBox>
 
-    <Button text="+ Ajouter Catégorie"
-            onAction="#saveCategory"/>
+        <Button text="Enregistrer"
+                styleClass="btn-green"
+                onAction="#saveCategory"
+                prefWidth="250"/>
 
-</VBox>
+        <Separator/>
+
+        <Label text="Liste des catégories"
+               styleClass="title-label"/>
+
+        <ScrollPane fitToWidth="true"
+                    prefHeight="280">
+
+            <VBox fx:id="categoryListBox"
+                  spacing="15"/>
+
+        </ScrollPane>
+
+    </VBox>
+
+</StackPane>

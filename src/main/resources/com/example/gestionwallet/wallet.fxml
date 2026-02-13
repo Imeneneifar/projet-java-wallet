@@ -3,30 +3,65 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.gestionwallet.controllers.WalletController"
             prefWidth="1200"
-            prefHeight="700">
+            prefHeight="700"
+            stylesheets="@dashboard.css">
+
+    <!-- LEFT SIDEBAR -->
+    <left>
+        <VBox prefWidth="220"
+              spacing="30"
+              style="-fx-background-color: linear-gradient(to bottom, #2c3e50, #1e2a3a); -fx-padding:30;">
+
+            <Label text="💳 Wallet"
+                   style="-fx-text-fill:white; -fx-font-size:22; -fx-font-weight:bold;"/>
+
+            <Button text="Dashboard" styleClass="btn-blue"/>
+
+        </VBox>
+    </left>
+
 
     <!-- TOP -->
     <top>
-        <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-padding:20;">
+        <HBox spacing="20"
+              alignment="CENTER_LEFT"
+              style="-fx-padding:20; -fx-background-color:#273c55;">
+
             <Label fx:id="balanceLabel"
                    text="Balance: 0 DT"
-                   style="-fx-font-size:26; -fx-font-weight:bold;"/>
+                   style="-fx-font-size:26; -fx-font-weight:bold; -fx-text-fill:white;"/>
+
             <Region HBox.hgrow="ALWAYS"/>
-            <HBox spacing="10">
-                <Button text="Analyse"/>
-                <Button text="Historique"/>
-            </HBox>
+
+            <Button text="Analyse"
+                    styleClass="btn-blue"/>
+
+            <Button text="Historique"
+                    styleClass="btn-green"/>
+
         </HBox>
     </top>
 
     <!-- CENTER -->
     <center>
-        <HBox spacing="30" alignment="CENTER">
-            <VBox fx:id="outcomeBox"/>
-            <VBox fx:id="incomeBox"/>
+        <HBox spacing="40"
+              alignment="CENTER"
+              style="-fx-padding:40; -fx-background-color:#1e2a3a;">
+
+            <VBox fx:id="outcomeBox"
+                  spacing="20"
+                  prefWidth="450"
+                  styleClass="card"/>
+
+            <VBox fx:id="incomeBox"
+                  spacing="20"
+                  prefWidth="450"
+                  styleClass="card"/>
+
         </HBox>
     </center>
 
