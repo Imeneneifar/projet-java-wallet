@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<StackPane prefWidth="1200" prefHeight="750"
+           stylesheets="@dashboard.css"
+           xmlns="http://javafx.com/javafx/8"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.gestionwallet.controllers.AdminController">
+
+    <VBox spacing="30" maxWidth="1000" styleClass="card">
+
+        <HBox alignment="CENTER_LEFT">
+            <Label text="Admin Dashboard" styleClass="title-label"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Download PDF" styleClass="btn-blue"/>
+        </HBox>
+
+        <HBox spacing="30">
+
+            <!-- WALLET CARD -->
+            <VBox spacing="20" prefWidth="450" styleClass="card">
+                <Label text="Wallet" style="-fx-text-fill:white; -fx-font-size:16;"/>
+                <ScrollPane fitToWidth="true" prefHeight="400">
+                    <VBox fx:id="walletContainer" spacing="10"/>
+                </ScrollPane>
+            </VBox>
+
+            <!-- TRANSACTION CARD -->
+            <VBox spacing="20" prefWidth="450" styleClass="card">
+                <Label text="Transactions" style="-fx-text-fill:white; -fx-font-size:16;"/>
+                <ScrollPane fitToWidth="true" prefHeight="400">
+                    <VBox fx:id="transactionContainer" spacing="10"/>
+                </ScrollPane>
+            </VBox>
+
+        </HBox>
+
+    </VBox>
+
+</StackPane>

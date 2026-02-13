@@ -266,5 +266,24 @@ public class WalletController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+    @FXML
+    private void openAdminPage() {
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/gestionwallet/admin-dashboard.fxml")
+            );
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(loader.load()));
+            stage.setTitle("Admin Dashboard");
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

@@ -20,6 +20,9 @@
                    style="-fx-text-fill:white; -fx-font-size:22; -fx-font-weight:bold;"/>
 
             <Button text="Dashboard" styleClass="btn-blue"/>
+            <Button text="Admin"
+                    styleClass="btn-blue"
+                    onAction="#openAdminPage"/>
 
         </VBox>
     </left>
