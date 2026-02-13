@@ -9,4 +9,5 @@ public interface Iservicecategorie {
     void modifier(categorie c);
     void supprimer(int id);
     List<categorie> afficher();
+
 }

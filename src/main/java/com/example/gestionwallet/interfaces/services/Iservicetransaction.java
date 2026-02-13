@@ -9,4 +9,5 @@ public interface Iservicetransaction {
     void modifier(transaction t);
     void supprimer(int id);
     List<transaction> afficher();
+
 }
