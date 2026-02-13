@@ -56,13 +56,13 @@
               style="-fx-padding:40; -fx-background-color:#1e2a3a;">
 
             <VBox fx:id="outcomeBox"
-                  spacing="20"
-                  prefWidth="450"
+                  spacing="30"
+                  prefWidth="550"
                   styleClass="card"/>
 
             <VBox fx:id="incomeBox"
-                  spacing="20"
-                  prefWidth="450"
+                  spacing="30"
+                  prefWidth="550"
                   styleClass="card"/>
 
         </HBox>

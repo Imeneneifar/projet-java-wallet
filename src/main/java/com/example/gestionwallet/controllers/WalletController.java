@@ -112,11 +112,19 @@ public class WalletController {
     private void addTransaction(transaction t) {
 
         HBox item = new HBox(10);
+        item.setPrefWidth(500);
+        item.setMinHeight(60);
+
         item.setPadding(new Insets(10));
         item.setStyle("-fx-background-color:#34495e; -fx-background-radius:10;");
 
         Label nameLabel = new Label(t.getNom_transaction());
         nameLabel.setStyle("-fx-font-weight:bold; -fx-text-fill:white;");
+        nameLabel.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(nameLabel, Priority.ALWAYS);
+        nameLabel.setWrapText(true);
+        nameLabel.setMaxWidth(250);
+
 
         Label amountLabel = new Label(t.getMontant() + " DT");
         amountLabel.setStyle(t.getMontant() >= 0

@@ -100,7 +100,11 @@ public class servicetransaction implements Iservicetransaction {
     public List<transaction> afficher() {
 
         List<transaction> list = new ArrayList<>();
-        String sql = "SELECT * FROM transaction";
+
+        String sql = "SELECT t.id_transaction, t.nom_transaction, t.type, t.montant, " +
+                "t.date_transaction, t.source, t.user_id, t.category_id, c.nom AS nom_categorie " +
+                "FROM transaction t " +
+                "JOIN category c ON t.category_id = c.id_category";
 
         try {
 
@@ -120,6 +124,10 @@ public class servicetransaction implements Iservicetransaction {
                         rs.getInt("category_id")
                 );
 
+                // نضيف اسم الكاتيجوري بين ()
+                String categorie = rs.getString("nom_categorie");
+                t.setNom_transaction(t.getNom_transaction() + " (" + categorie + ")");
+
                 list.add(t);
             }
 
@@ -129,6 +137,7 @@ public class servicetransaction implements Iservicetransaction {
 
         return list;
     }
+
 
     public boolean exists(transaction t) {
 
