@@ -68,12 +68,12 @@ public class transaction {
     @Override
     public String toString() {
         return "ID: " + id_transaction +
-                " | Nom: " + nom_transaction +
-                " | Type: " + type +
-                " | Montant: " + montant + " DT" +
-                " | Date: " + date_transaction +
-                " | Source: " + source +
-                " | Category ID: " + category_id;
+                " | Nom : " + nom_transaction +
+                " | Type : " + type +
+                " | Montant : " + montant + " DT" +
+                " | Date : " + date_transaction +
+                " | Source : " + source +
+                " | Category ID : " + category_id;
     }
 
 }

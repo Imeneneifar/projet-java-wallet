@@ -37,9 +37,9 @@ public class categorie {
     @Override
     public String toString() {
         return "ID: " + id_category +
-                " | Nom: " + nom +
-                " | Priorité: " + priorite +
-                " | Type: " + type;
+                " | Nom : " + nom +
+                " | Priorité : " + priorite +
+                " | Type : " + type;
     }
 
 }
