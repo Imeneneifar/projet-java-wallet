@@ -64,19 +64,62 @@ public class AddTransactionController {
             }
         }
     }
+    private void showError(String message) {
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
     @FXML
     private void saveTransaction() {
 
+        String name = nameField.getText();
+        String amountText = amountField.getText();
+        String categoryName = categoryBox.getValue();
+
+        // ===== NOM LETTRES SEULEMENT =====
+        if (name == null || name.trim().isEmpty()) {
+            showError("Le nom est obligatoire.");
+            return;
+        }
+
+        if (!name.matches("[a-zA-Z ]+")) {
+            showError("Le nom doit contenir uniquement des lettres.");
+            return;
+        }
+
+        // ===== MONTANT CHIFFRES SEULEMENT =====
+        if (amountText == null || amountText.trim().isEmpty()) {
+            showError("Le montant est obligatoire.");
+            return;
+        }
+
+        if (!amountText.matches("\\d+(\\.\\d+)?")) {
+            showError("Le montant doit contenir uniquement des chiffres.");
+            return;
+        }
+
+        double amount = Double.parseDouble(amountText);
+
+        if (datePicker.getValue() == null) {
+            showError("La date est obligatoire.");
+            return;
+        }
+
+        if (categoryName == null) {
+            showError("Veuillez choisir une catégorie.");
+            return;
+        }
+
         try {
 
-            String name = nameField.getText();
-            double amount = Double.parseDouble(amountField.getText());
             String type = currentType;
-            String categoryName = categoryBox.getValue();
 
             if (type.equals("OUTCOME")) {
-                amount = -amount;
+                amount = -Math.abs(amount);
             }
 
             int categoryId = sc.getIdByName(categoryName);
@@ -101,6 +144,7 @@ public class AddTransactionController {
             e.printStackTrace();
         }
     }
+
 
     @FXML
     private void openAddCategory() {

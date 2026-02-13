@@ -30,6 +30,14 @@ public class AddCategoryController {
         this.categoryType = type;
         loadCategories();
     }
+    private void showError(String message) {
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
     @FXML
     private void saveCategory() {
@@ -37,7 +45,20 @@ public class AddCategoryController {
         String name = nameField.getText();
         String priority = priorityBox.getValue();
 
-        if (name == null || name.isEmpty() || priority == null) return;
+        if (name == null || name.trim().isEmpty()) {
+            showError("Le nom est obligatoire.");
+            return;
+        }
+
+        if (!name.matches("[a-zA-Z ]+")) {
+            showError("Le nom doit contenir uniquement des lettres.");
+            return;
+        }
+
+        if (priority == null) {
+            showError("Veuillez choisir une priorité.");
+            return;
+        }
 
         if (editingId == -1) {
 
@@ -56,6 +77,8 @@ public class AddCategoryController {
 
         loadCategories();
     }
+
+
 
     private void loadCategories() {
 

@@ -170,7 +170,7 @@ public class WalletController {
             Label amountLabelPopup = new Label("Montant:");
             amountLabelPopup.setStyle("-fx-text-fill:#dcdde1;");
 
-            TextField amountField = new TextField(String.valueOf(t.getMontant()));
+            TextField amountField = new TextField(String.valueOf(Math.abs(t.getMontant())));
             amountField.setStyle("-fx-background-color:#34495e; -fx-text-fill:white; -fx-background-radius:10;");
 
             Button saveBtn = new Button("Enregistrer");
@@ -195,21 +195,51 @@ public class WalletController {
             dialogStage.setScene(scene);
 
             saveBtn.setOnAction(ev -> {
-                try {
-                    t.setNom_transaction(nameField.getText());
-                    t.setMontant(Double.parseDouble(amountField.getText()));
-                    st.modifier(t);
-                    loadTransactions();
-                    dialogStage.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+
+                String newName = nameField.getText();
+                String amountText = amountField.getText();
+
+                // ===== NOM LETTRES SEULEMENT =====
+                if (newName == null || newName.trim().isEmpty()) {
+                    showError("Le nom est obligatoire.");
+                    return;
                 }
+
+                if (!newName.matches("[a-zA-Z ]+")) {
+                    showError("Le nom doit contenir uniquement des lettres.");
+                    return;
+                }
+
+                // ===== MONTANT CHIFFRES SEULEMENT =====
+                if (amountText == null || amountText.trim().isEmpty()) {
+                    showError("Le montant est obligatoire.");
+                    return;
+                }
+
+                if (!amountText.matches("\\d+(\\.\\d+)?")) {
+                    showError("Le montant doit contenir uniquement des chiffres.");
+                    return;
+                }
+
+                double newAmount = Double.parseDouble(amountText);
+
+                if (t.getType().equals("OUTCOME")) {
+                    newAmount = -Math.abs(newAmount);
+                }
+
+                t.setNom_transaction(newName);
+                t.setMontant(newAmount);
+
+                st.modifier(t);
+                loadTransactions();
+                dialogStage.close();
             });
 
             cancelBtn.setOnAction(ev -> dialogStage.close());
 
             dialogStage.showAndWait();
         });
+
 
         if (t.getType().equals("INCOME"))
             incomeList.getChildren().add(item);
@@ -227,4 +257,14 @@ public class WalletController {
                 ? "-fx-font-size:26; -fx-font-weight:bold; -fx-text-fill:red;"
                 : "-fx-font-size:26; -fx-font-weight:bold; -fx-text-fill:#2ecc71;");
     }
+
+    private void showError(String message) {
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }
