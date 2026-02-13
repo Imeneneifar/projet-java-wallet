@@ -4,7 +4,6 @@ import com.example.gestionwallet.models.transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.example.gestionwallet.models.categorie;
-import com.example.gestionwallet.services.servicecategorie;
 
 import java.sql.Date;
 
@@ -24,16 +23,16 @@ public class TestTransaction {
 
         servicecategorie sc = new servicecategorie();
 
-        // 1️⃣ Nzid category
-        categorie c = new categorie("TestCat", "HAUTE", "INCOME");
+
+        categorie c = new categorie("Test", "HAUTE", "INCOME");
         sc.ajouter(c);
 
-        int categoryId = sc.getIdByName("TestCat");
+        int categoryId = sc.getIdByName("Test");
 
-        assertTrue(categoryId > 0); // sécurité
+        assertTrue(categoryId > 0);
 
 
-        // 2️⃣ Nzid transaction
+
         Date date = Date.valueOf("2025-02-10");
 
         transaction t = new transaction(
@@ -70,7 +69,7 @@ public class TestTransaction {
 
         service.ajouter(t);
 
-        // نفس الملاحظة: ID ما يرجعش مباشرة
+
         assertTrue(true);
     }
 }

@@ -17,7 +17,7 @@ public class database {
     private database() {
         try {
             cnx = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println(" Connexion MySQL établie");
+            System.out.println(" Connexion BD établie");
         } catch (SQLException e) {
             System.out.println(" Erreur connexion DB");
             e.printStackTrace();
