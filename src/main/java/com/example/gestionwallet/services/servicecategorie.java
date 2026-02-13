@@ -16,11 +16,53 @@ public class servicecategorie implements Iservicecategorie {
         cnx = database.getInstance().getConnection();
     }
 
+    //pour jointure
+    public int getIdByName(String nom) {
+        String sql = "SELECT id_category FROM category WHERE nom = ?";
+
+        try {
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setString(1, nom);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id_category");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
+    public boolean existsByName(String nom, String type) {
+
+        String sql = "SELECT COUNT(*) FROM category WHERE LOWER(nom)=LOWER(?) AND type=?";
+
+        try {
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setString(1, nom);
+            ps.setString(2, type);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     @Override
     public void ajouter(categorie c) {
 
         if (existsByName(c.getNom(), c.getType())) {
-            System.out.println("Catégorie déjà existante — ajout annulé");
+            System.out.println(" Catégorie déjà existante ");
             return;
         }
 
@@ -105,47 +147,4 @@ public class servicecategorie implements Iservicecategorie {
 
         return list;
     }
-
-    public boolean existsByName(String nom, String type) {
-
-        String sql = "SELECT COUNT(*) FROM category WHERE LOWER(nom)=LOWER(?) AND type=?";
-
-        try {
-            PreparedStatement ps = cnx.prepareStatement(sql);
-            ps.setString(1, nom);
-            ps.setString(2, type);
-
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    public int getIdByName(String nom) {
-        String sql = "SELECT id_category FROM category WHERE nom = ?";
-
-        try {
-            PreparedStatement ps = cnx.prepareStatement(sql);
-            ps.setString(1, nom);
-
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("id_category");
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return -1; // important
-    }
-
-
 }
